@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  gateway:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./gateway/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - user-service
+      - product-service
+      - order-service
+    networks:
+      - ecom-net
+
+  user-service:
+    build: ./user-service
+    expose:
+      - "8000"
+    environment:
+      SECRET_KEY: "super-secret-key-change-in-prod"
+      DATABASE_URL: "sqlite:///./users.db"
+    networks:
+      - ecom-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  product-service:
+    build: ./product-service
+    expose:
+      - "8081"
+    networks:
+      - ecom-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  order-service:
+    build: ./order-service
+    expose:
+      - "3000"
+    environment:
+      USER_SERVICE_URL: "http://user-service:8000"
+      PRODUCT_SERVICE_URL: "http://product-service:8081"
+      JWT_SECRET: "super-secret-key-change-in-prod"
+      PORT: "3000"
+    depends_on:
+      - user-service
+      - product-service
+    networks:
+      - ecom-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  ecom-net:
+    driver: bridge
