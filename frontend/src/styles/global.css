@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { color-scheme: dark; }
+
+  body {
+    @apply bg-bg text-[#e8e8f0] font-sans antialiased;
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-surface border border-border rounded-xl p-6;
+  }
+
+  .input-base {
+    @apply w-full bg-elevated border border-border rounded-lg px-4 py-2.5
+           text-[#e8e8f0] placeholder-[#444458] outline-none
+           focus:border-accent/50 focus:ring-1 focus:ring-accent/15
+           transition-colors;
+  }
+}

@@ -1,6 +1,15 @@
-version: '3.8'
+version: "3.8"
 
 services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - gateway
+    networks:
+      - ecom-net
+
   gateway:
     image: nginx:alpine
     ports:
@@ -28,7 +37,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
   product-service:
     build: ./product-service
     expose:
