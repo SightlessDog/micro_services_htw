@@ -1,41 +1,32 @@
 const express = require("express");
-const { v4: uuidv4 } = require("uuid");
-const db = require("../db");
 const { authenticate } = require("../middleware/auth");
 const productClient = require("../services/productClient");
+const { publishOrderPlaced, publishOrderCancelled } = require("../kafka");
+const { prisma } = require("../db");
 
 const router = express.Router();
 
-const VALID_STATUSES = [
-  "pending",
-  "confirmed",
-  "shipped",
-  "delivered",
-  "cancelled",
-];
+const VALID_STATUSES = ["pending", "confirmed", "shipped", "delivered", "cancelled"];
 
-function parseOrder(row) {
-  return { ...row, items: JSON.parse(row.items) };
-}
+const asyncHandler = fn => (req, res, next) =>
+  Promise.resolve(fn(req, res, next)).catch(next);
 
-router.get("/", authenticate, (req, res) => {
-  const rows = db
-    .prepare("SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC")
-    .all(req.user.id);
-  res.json(rows.map(parseOrder));
-});
+router.get("/", authenticate, asyncHandler(async (req, res) => {
+  const orders = await prisma.order.findMany({
+    where: { userId: req.user.id },
+    orderBy: { createdAt: "desc" },
+  });
+  res.json(orders);
+}));
 
-router.get("/:id", authenticate, (req, res) => {
-  const row = db
-    .prepare("SELECT * FROM orders WHERE id = ?")
-    .get(req.params.id);
-  if (!row) return res.status(404).json({ error: "Order not found" });
-  if (row.user_id !== req.user.id)
-    return res.status(403).json({ error: "Forbidden" });
-  res.json(parseOrder(row));
-});
+router.get("/:id", authenticate, asyncHandler(async (req, res) => {
+  const order = await prisma.order.findUnique({ where: { id: req.params.id } });
+  if (!order) return res.status(404).json({ error: "Order not found" });
+  if (order.userId !== req.user.id) return res.status(403).json({ error: "Forbidden" });
+  res.json(order);
+}));
 
-router.post("/", authenticate, async (req, res) => {
+router.post("/", authenticate, async (req, res, next) => {
   const { items } = req.body;
 
   if (!Array.isArray(items) || items.length === 0) {
@@ -56,7 +47,6 @@ router.post("/", authenticate, async (req, res) => {
 
     for (const item of items) {
       const product = await productClient.getProduct(item.product_id);
-
       enrichedItems.push({
         product_id: product.id,
         name: product.name,
@@ -67,29 +57,29 @@ router.post("/", authenticate, async (req, res) => {
       total += product.price * item.quantity;
     }
 
-    // Decrement stock for each product
-    for (const item of enrichedItems) {
-      await productClient.decrementStock(item.product_id, item.quantity);
-    }
+    const order = await prisma.order.create({
+      data: {
+        userId: req.user.id,
+        items: enrichedItems,
+        total,
+        status: "pending",
+      },
+    });
 
-    const id = uuidv4();
-    db.prepare(
-      `INSERT INTO orders (id, user_id, items, total, status) VALUES (?, ?, ?, ?, ?)`,
-    ).run(id, req.user.id, JSON.stringify(enrichedItems), total, "pending");
-
-    const order = parseOrder(
-      db.prepare("SELECT * FROM orders WHERE id = ?").get(id),
-    );
     res.status(201).json(order);
+
+    publishOrderPlaced(order, req.user.email).catch(err =>
+      console.error("Failed to publish order.placed:", order.id, err.message),
+    );
   } catch (err) {
-    const status = err.response?.status === 404 ? 404 : 409;
-    res
-      .status(status)
-      .json({ error: err.response?.data?.error || err.message });
+    if (err.response?.status === 404) {
+      return res.status(404).json({ error: err.response.data?.error || err.message });
+    }
+    next(err);
   }
 });
 
-router.patch("/:id/status", authenticate, (req, res) => {
+router.patch("/:id/status", authenticate, asyncHandler(async (req, res) => {
   const { status } = req.body;
 
   if (!VALID_STATUSES.includes(status)) {
@@ -98,41 +88,35 @@ router.patch("/:id/status", authenticate, (req, res) => {
       .json({ error: `status must be one of: ${VALID_STATUSES.join(", ")}` });
   }
 
-  const row = db
-    .prepare("SELECT * FROM orders WHERE id = ?")
-    .get(req.params.id);
-  if (!row) return res.status(404).json({ error: "Order not found" });
-  if (row.user_id !== req.user.id)
-    return res.status(403).json({ error: "Forbidden" });
+  const order = await prisma.order.findUnique({ where: { id: req.params.id } });
+  if (!order) return res.status(404).json({ error: "Order not found" });
+  if (order.userId !== req.user.id) return res.status(403).json({ error: "Forbidden" });
 
-  db.prepare(
-    `UPDATE orders SET status = ?, updated_at = datetime('now') WHERE id = ?`,
-  ).run(status, req.params.id);
-
-  const updated = parseOrder(
-    db.prepare("SELECT * FROM orders WHERE id = ?").get(req.params.id),
-  );
+  const updated = await prisma.order.update({
+    where: { id: req.params.id },
+    data: { status },
+  });
   res.json(updated);
-});
+}));
 
-router.delete("/:id", authenticate, (req, res) => {
-  const row = db
-    .prepare("SELECT * FROM orders WHERE id = ?")
-    .get(req.params.id);
-  if (!row) return res.status(404).json({ error: "Order not found" });
-  if (row.user_id !== req.user.id)
-    return res.status(403).json({ error: "Forbidden" });
-  if (row.status !== "pending") {
-    return res
-      .status(409)
-      .json({ error: "Only pending orders can be cancelled" });
+router.delete("/:id", authenticate, asyncHandler(async (req, res) => {
+  const order = await prisma.order.findUnique({ where: { id: req.params.id } });
+  if (!order) return res.status(404).json({ error: "Order not found" });
+  if (order.userId !== req.user.id) return res.status(403).json({ error: "Forbidden" });
+  if (order.status !== "pending") {
+    return res.status(409).json({ error: "Only pending orders can be cancelled" });
   }
 
-  db.prepare(
-    `UPDATE orders SET status = 'cancelled', updated_at = datetime('now') WHERE id = ?`,
-  ).run(req.params.id);
+  const cancelled = await prisma.order.update({
+    where: { id: req.params.id },
+    data: { status: "cancelled" },
+  });
 
   res.json({ message: "Order cancelled" });
-});
+
+  publishOrderCancelled(cancelled, req.user.email).catch(err =>
+    console.error("Failed to publish order.cancelled:", cancelled.id, err.message),
+  );
+}));
 
 module.exports = router;

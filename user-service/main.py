@@ -1,11 +1,9 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from database import engine, get_db
+from database import get_db
 import models
 import schemas
 import auth
-
-models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="User Service", version="1.0.0")
 

@@ -9,7 +9,7 @@ from database import get_db
 import models
 import schemas
 
-SECRET_KEY = os.getenv("SECRET_KEY", "super-secret-key-change-in-prod")
+SECRET_KEY = os.getenv("JWT_SECRET", "super-secret-key-change-in-prod")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 

@@ -1,12 +1,18 @@
-FROM python:3.11-slim
-
+FROM python:3.11-slim AS deps
 WORKDIR /app
-
-COPY requirements.txt .
+RUN python -m venv /venv
+ENV PATH="/venv/bin:$PATH"
+COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
-
+FROM python:3.11-slim AS runner
+RUN groupadd -r app && useradd -r -g app app
+WORKDIR /app
+COPY --from=deps /venv /venv
+ENV PATH="/venv/bin:$PATH"
+COPY --chown=app:app . .
+USER app
 EXPOSE 8000
-
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "9000"]
+# In production, migrations run in a separate CI/CD step before deployment.
+# For this demo, alembic upgrade head runs at startup using committed migration files.
+CMD ["sh", "-c", "alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port 8000"]

@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   frontend:
     build: ./frontend
@@ -23,28 +21,146 @@ services:
     networks:
       - ecom-net
 
+  kafka:
+    image: apache/kafka:latest
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:29092,CONTROLLER://0.0.0.0:9093,PLAINTEXT_HOST://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      CLUSTER_ID: "MkU3OEVBNTcwNTJENDM2Qk"
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+    networks:
+      - ecom-net
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "/opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  kafka-ui:
+    image: kafbat/kafka-ui:latest
+    container_name: kafka-ui
+    depends_on:
+      kafka:
+        condition: service_healthy
+    ports:
+      - "9999:8080"
+    networks:
+      - ecom-net
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      DYNAMIC_CONFIG_ENABLED: "true"
+
+  # ── Databases ──────────────────────────────────────────────────────────────
+  user-db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: userdb
+      POSTGRES_USER: user_user
+      POSTGRES_PASSWORD: ${POSTGRES_USER_PASS}
+    volumes:
+      - user-db-data:/var/lib/postgresql/data
+    networks:
+      - ecom-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user_user -d userdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  product-db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: productdb
+      POSTGRES_USER: product_user
+      POSTGRES_PASSWORD: ${POSTGRES_PRODUCT_PASS}
+    volumes:
+      - product-db-data:/var/lib/postgresql/data
+    networks:
+      - ecom-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U product_user -d productdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  order-db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: orderdb
+      POSTGRES_USER: order_user
+      POSTGRES_PASSWORD: ${POSTGRES_ORDER_PASS}
+    volumes:
+      - order-db-data:/var/lib/postgresql/data
+    networks:
+      - ecom-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U order_user -d orderdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ── Services ───────────────────────────────────────────────────────────────
   user-service:
     build: ./user-service
     expose:
       - "8000"
     environment:
-      SECRET_KEY: "super-secret-key-change-in-prod"
-      DATABASE_URL: "sqlite:///./users.db"
+      JWT_SECRET: ${JWT_SECRET}
+      DATABASE_URL: "postgresql://user_user:${POSTGRES_USER_PASS}@user-db:5432/userdb"
+    depends_on:
+      user-db:
+        condition: service_healthy
     networks:
       - ecom-net
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      test:
+        [
+          "CMD-SHELL",
+          'python3 -c "import urllib.request; urllib.request.urlopen(''http://localhost:8000/health'')"',
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
+
   product-service:
     build: ./product-service
     expose:
       - "8081"
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://product-db:5432/productdb"
+      SPRING_DATASOURCE_USERNAME: product_user
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PRODUCT_PASS}
+      KAFKA_BOOTSTRAP_SERVERS: "kafka:29092"
+    depends_on:
+      product-db:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
     networks:
       - ecom-net
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
+      test:
+        [
+          "CMD-SHELL",
+          'wget -qO- http://localhost:8081/actuator/health | grep -q ''"status":"UP"''',
+        ]
       interval: 15s
       timeout: 5s
       retries: 5
@@ -54,17 +170,25 @@ services:
     expose:
       - "3000"
     environment:
+      DATABASE_URL: "postgresql://order_user:${POSTGRES_ORDER_PASS}@order-db:5432/orderdb"
       USER_SERVICE_URL: "http://user-service:8000"
       PRODUCT_SERVICE_URL: "http://product-service:8081"
-      JWT_SECRET: "super-secret-key-change-in-prod"
+      JWT_SECRET: ${JWT_SECRET}
       PORT: "3000"
+      KAFKA_BROKERS: "kafka:29092"
     depends_on:
-      - user-service
-      - product-service
+      order-db:
+        condition: service_healthy
+      user-service:
+        condition: service_healthy
+      product-service:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
     networks:
       - ecom-net
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/health | grep -q ok"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -72,3 +196,9 @@ services:
 networks:
   ecom-net:
     driver: bridge
+
+volumes:
+  kafka-data:
+  user-db-data:
+  product-db-data:
+  order-db-data:

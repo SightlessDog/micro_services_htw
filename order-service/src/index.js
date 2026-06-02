@@ -1,5 +1,6 @@
 const express = require('express');
 const ordersRouter = require('./routes/orders');
+const { connectProducer } = require('./kafka');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -17,6 +18,13 @@ app.use((err, _req, res, _next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
-app.listen(PORT, () => {
-  console.log(`Order service running on port ${PORT}`);
-});
+connectProducer()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Order service running on port ${PORT}`);
+    });
+  })
+  .catch(err => {
+    console.error('Startup failed:', err);
+    process.exit(1);
+  });
