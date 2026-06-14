@@ -47,7 +47,6 @@ server {
     }
 
     location /health {
-        limit_req off;
         return 200 '{"status":"gateway-ok"}';
         add_header Content-Type application/json;
     }
