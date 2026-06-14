@@ -1,0 +1,54 @@
+server {
+    listen 80;
+    server_name localhost;
+
+    # Pass real client IP downstream
+    proxy_set_header Host              $host;
+    proxy_set_header X-Real-IP         $remote_addr;
+    proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    # Baseline security headers for every response.
+    add_header X-Content-Type-Options nosniff always;
+    add_header X-Frame-Options DENY always;
+    add_header Referrer-Policy strict-origin-when-cross-origin always;
+    add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
+    add_header Content-Security-Policy "default-src 'none'; frame-ancestors 'none'" always;
+
+    # Throttle proxied API + identity endpoints; allow short bursts.
+    limit_req zone=gateway_limit burst=40 nodelay;
+
+    location /users {
+        proxy_pass http://user_service;
+    }
+
+    location /products {
+        proxy_pass http://product_service;
+    }
+
+    location /orders {
+        proxy_pass http://order_service;
+    }
+
+    # Internal JWKS proxy — backend services fetch from here so Host
+    # reaches Zitadel correctly (JDK HttpURLConnection won't let apps set Host).
+    # Host must match ZITADEL_EXTERNALDOMAIN:ZITADEL_EXTERNALPORT (the issuer)
+    # — userinfo validates this, JWKS happens to tolerate a mismatch.
+    location /oauth/v2/keys {
+        proxy_pass http://zitadel:8080/oauth/v2/keys;
+        proxy_set_header Host ${ZITADEL_EXTERNALDOMAIN}:${ZITADEL_EXTERNALPORT};
+    }
+
+    # Internal userinfo proxy — user-service resolves email/name for access
+    # tokens that only carry `sub` (same Host-rewrite reason as above).
+    location /oidc/v1/userinfo {
+        proxy_pass http://zitadel:8080/oidc/v1/userinfo;
+        proxy_set_header Host ${ZITADEL_EXTERNALDOMAIN}:${ZITADEL_EXTERNALPORT};
+    }
+
+    location /health {
+        limit_req off;
+        return 200 '{"status":"gateway-ok"}';
+        add_header Content-Type application/json;
+    }
+}

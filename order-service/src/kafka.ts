@@ -1,0 +1,57 @@
+import { Kafka } from "kafkajs";
+import type { Order } from "@prisma/client";
+
+const kafka = new Kafka({
+  clientId: "order-service",
+  brokers: (process.env.KAFKA_BROKERS || "kafka:9092").split(","),
+});
+
+const producer = kafka.producer({
+  retry: { retries: 5 },
+});
+
+export async function connectProducer(): Promise<void> {
+  await producer.connect();
+  console.log("Kafka producer connected");
+}
+
+export async function disconnectProducer(): Promise<void> {
+  await producer.disconnect();
+  console.log("Kafka producer disconnected");
+}
+
+export async function publishOrderPlaced(order: Order, userEmail?: string): Promise<void> {
+  await producer.send({
+    topic: "order.placed",
+    messages: [{
+      key: order.id,
+      value: JSON.stringify({
+        eventType: "order.placed",
+        orderId: order.id,
+        userId: order.userId,
+        userEmail,
+        items: order.items,
+        total: order.total,
+        createdAt: order.createdAt,
+      }),
+    }],
+  });
+}
+
+export async function publishOrderCancelled(order: Order, userEmail?: string): Promise<void> {
+  await producer.send({
+    topic: "order.cancelled",
+    messages: [{
+      key: order.id,
+      value: JSON.stringify({
+        eventType: "order.cancelled",
+        orderId: order.id,
+        userId: order.userId,
+        userEmail,
+        items: order.items,
+        total: order.total,
+        cancelledAt: new Date().toISOString(),
+      }),
+    }],
+  });
+}

@@ -1,0 +1,52 @@
+# Local dev overrides — auto-merged by `docker compose up`.
+# Source is bind-mounted into each container and run via its dev/watch command,
+# so editing files on the host reflects immediately without rebuilding images.
+# Exception: product-service (Java) has no live-reload dev server — it uses
+# `develop.watch` with action "rebuild". Run with `docker compose watch` (or
+# `docker compose up --watch`) for that to take effect.
+
+services:
+  frontend:
+    build:
+      target: dev
+    ports: !override
+      - "5173:5173"
+    environment:
+      VITE_PROXY_TARGET: "http://gateway:80"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+  user-service:
+    build:
+      target: dev
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./user-service:/app
+
+  order-service:
+    build:
+      target: dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./order-service:/app
+      - /app/node_modules
+
+  notification-service:
+    build:
+      target: dev
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./notification-service:/app
+      - /app/node_modules
+
+  product-service:
+    develop:
+      watch:
+        - action: rebuild
+          path: ./product-service/src
+        - action: rebuild
+          path: ./product-service/pom.xml

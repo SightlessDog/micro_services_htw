@@ -1,0 +1,1 @@
+{"root":["./src/db.ts","./src/index.ts","./src/kafka.ts","./src/middleware/auth.ts","./src/routes/orders.ts","./src/services/productclient.ts","./src/types/express.d.ts"],"version":"5.9.3"}

@@ -6,9 +6,12 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variants = {
-  primary: 'bg-accent text-black hover:bg-accent-dim focus-visible:ring-2 focus-visible:ring-accent/40',
-  ghost: 'bg-transparent text-[#e8e8f0] border border-border hover:bg-elevated hover:border-[#3a3a50]',
-  danger: 'bg-red-600/15 text-red-400 border border-red-800/40 hover:bg-red-600/25',
+  primary:
+    'bg-accent text-black hover:bg-accent-dim focus-visible:ring-2 focus-visible:ring-accent/40',
+  ghost:
+    'bg-transparent text-text border border-border hover:bg-elevated hover:border-border-strong focus-visible:ring-2 focus-visible:ring-accent/40',
+  danger:
+    'bg-red-600/15 text-red-700 border border-red-800/40 hover:bg-red-600/25 focus-visible:ring-2 focus-visible:ring-accent/40',
 }
 
 const sizes = {
@@ -24,6 +27,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       className={`
         inline-flex items-center justify-center font-medium rounded-lg transition-all
         active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed
+        outline-none focus-visible:ring-offset-0
         ${variants[variant]} ${sizes[size]} ${className}
       `}
       {...props}

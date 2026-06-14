@@ -1,16 +1,17 @@
-import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { useAuthStore } from '../../store/authStore'
+import { Link, useLocation } from 'react-router-dom'
+import { useAuthStore, isAdmin } from '../../store/authStore'
 import { useCartStore } from '../../store/cartStore'
+import { userManager } from '../../lib/oidc'
 
 export function Header() {
-  const { user, logout } = useAuthStore()
+  const { user } = useAuthStore()
   const cartCount = useCartStore((s) => s.count())
-  const navigate = useNavigate()
   const { pathname } = useLocation()
+  const admin = isAdmin(user)
 
-  const handleLogout = () => {
-    logout()
-    navigate('/login')
+  const handleLogout = async () => {
+    await userManager.removeUser()
+    await userManager.signoutRedirect()
   }
 
   return (
@@ -18,12 +19,12 @@ export function Header() {
       <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between gap-4">
         <Link
           to="/products"
-          className="font-mono text-xs font-bold tracking-[0.3em] text-accent uppercase shrink-0"
+          className="font-mono text-xs font-bold tracking-[0.3em] text-accent uppercase shrink-0 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
         >
-          ECOM
+          CRATE
         </Link>
 
-        <nav className="flex items-center gap-1">
+        <nav className="flex items-center gap-1 overflow-x-auto no-scrollbar">
           <NavLink href="/products" active={pathname.startsWith('/products')}>
             Products
           </NavLink>
@@ -32,13 +33,23 @@ export function Header() {
               Orders
             </NavLink>
           )}
+          {admin && (
+            <>
+              <NavLink href="/admin/products" active={pathname.startsWith('/admin/products')}>
+                Manage products
+              </NavLink>
+              <NavLink href="/admin/orders" active={pathname.startsWith('/admin/orders')}>
+                All orders
+              </NavLink>
+            </>
+          )}
         </nav>
 
         <div className="flex items-center gap-3 shrink-0">
           {user && (
             <Link
               to="/cart"
-              className="relative text-[#8888a0] hover:text-[#e8e8f0] transition-colors p-1"
+              className="relative text-text-muted hover:text-text transition-colors p-1 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
               aria-label="Cart"
             >
               <CartIcon />
@@ -52,12 +63,15 @@ export function Header() {
 
           {user ? (
             <div className="flex items-center gap-2.5">
-              <span className="text-xs text-[#8888a0] max-w-[100px] truncate hidden sm:block">
-                {user.full_name}
-              </span>
+              <Link
+                to="/profile"
+                className="text-xs text-text-muted hover:text-text max-w-[100px] truncate hidden sm:block transition-colors rounded-lg px-1 -mx-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
+              >
+                {user.name}
+              </Link>
               <button
                 onClick={handleLogout}
-                className="text-xs text-[#8888a0] hover:text-[#e8e8f0] border border-border hover:border-[#3a3a50] px-3 py-1.5 rounded-lg transition-all"
+                className="text-xs text-text-muted hover:text-text border border-border hover:border-border-strong px-3 py-1.5 rounded-lg transition-all outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
               >
                 Sign out
               </button>
@@ -65,7 +79,7 @@ export function Header() {
           ) : (
             <Link
               to="/login"
-              className="text-xs font-semibold text-black bg-accent hover:bg-accent-dim px-4 py-1.5 rounded-lg transition-colors"
+              className="text-xs font-semibold text-black bg-accent hover:bg-accent-dim px-4 py-1.5 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
             >
               Sign in
             </Link>
@@ -88,10 +102,10 @@ function NavLink({
   return (
     <Link
       to={href}
-      className={`text-sm px-3 py-1.5 rounded-lg transition-colors ${
+      className={`text-sm px-3 py-1.5 rounded-lg transition-colors shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-accent/40 ${
         active
-          ? 'text-[#e8e8f0] bg-elevated'
-          : 'text-[#8888a0] hover:text-[#e8e8f0] hover:bg-elevated/60'
+          ? 'text-text bg-elevated'
+          : 'text-text-muted hover:text-text hover:bg-elevated/60'
       }`}
     >
       {children}

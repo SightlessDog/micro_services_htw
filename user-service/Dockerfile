@@ -16,3 +16,10 @@ EXPOSE 8000
 # In production, migrations run in a separate CI/CD step before deployment.
 # For this demo, alembic upgrade head runs at startup using committed migration files.
 CMD ["sh", "-c", "alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port 8000"]
+
+# Dev target: same deps, uvicorn --reload, source bind-mounted at runtime.
+FROM deps AS dev
+WORKDIR /app
+COPY . .
+EXPOSE 8000
+CMD ["sh", "-c", "alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port 8000 --reload"]

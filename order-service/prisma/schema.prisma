@@ -4,16 +4,18 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "localhost:5432/order_service"
+  url      = env("DATABASE_URL")
 }
 
 model Order {
   id        String   @id @default(uuid())
-  userId    Int      @map("user_id")
+  userId    String   @map("user_id")
   items     Json
   total     Float
+  status    String   @default("pending")
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
+  @@index([userId])
   @@map("orders")
 }

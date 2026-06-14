@@ -2,11 +2,14 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Header } from './components/layout/Header'
 import { LoginPage } from './pages/LoginPage'
-import { RegisterPage } from './pages/RegisterPage'
+import { CallbackPage } from './pages/CallbackPage'
 import { ProductsPage } from './pages/ProductsPage'
 import { CartPage } from './pages/CartPage'
 import { OrdersPage } from './pages/OrdersPage'
-import { useAuthStore } from './store/authStore'
+import { ProfilePage } from './pages/ProfilePage'
+import { AdminProductsPage } from './pages/AdminProductsPage'
+import { AdminOrdersPage } from './pages/AdminOrdersPage'
+import { useAuthStore, isAdmin } from './store/authStore'
 import type { ReactNode } from 'react'
 
 const queryClient = new QueryClient({
@@ -20,6 +23,12 @@ function RequireAuth({ children }: { children: ReactNode }) {
   return token ? <>{children}</> : <Navigate to="/login" replace />
 }
 
+function RequireAdmin({ children }: { children: ReactNode }) {
+  const { token, user } = useAuthStore()
+  if (!token) return <Navigate to="/login" replace />
+  return isAdmin(user) ? <>{children}</> : <Navigate to="/products" replace />
+}
+
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -28,7 +37,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/products" replace />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/callback" element={<CallbackPage />} />
           <Route path="/products" element={<ProductsPage />} />
           <Route
             path="/cart"
@@ -44,6 +53,30 @@ export default function App() {
               <RequireAuth>
                 <OrdersPage />
               </RequireAuth>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <RequireAuth>
+                <ProfilePage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/admin/products"
+            element={
+              <RequireAdmin>
+                <AdminProductsPage />
+              </RequireAdmin>
+            }
+          />
+          <Route
+            path="/admin/orders"
+            element={
+              <RequireAdmin>
+                <AdminOrdersPage />
+              </RequireAdmin>
             }
           />
         </Routes>

@@ -1,36 +1,27 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, Field
 from datetime import datetime
-from typing import Optional
-
-
-class UserCreate(BaseModel):
-    email: EmailStr
-    full_name: str
-    password: str
-
-
-class UserLogin(BaseModel):
-    email: EmailStr
-    password: str
 
 
 class UserResponse(BaseModel):
-    id: int
+    id: str
     email: str
     full_name: str
     is_active: bool
     created_at: datetime
+    phone_number: str | None = None
+    address_street: str | None = None
+    address_city: str | None = None
+    address_postal_code: str | None = None
+    address_country: str | None = None
 
     class Config:
         from_attributes = True
 
 
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-    user: UserResponse
-
-
-class TokenData(BaseModel):
-    user_id: Optional[int] = None
-    email: Optional[str] = None
+class UserUpdate(BaseModel):
+    full_name: str | None = Field(default=None, min_length=1, max_length=200)
+    phone_number: str | None = Field(default=None, max_length=30)
+    address_street: str | None = Field(default=None, max_length=200)
+    address_city: str | None = Field(default=None, max_length=100)
+    address_postal_code: str | None = Field(default=None, max_length=20)
+    address_country: str | None = Field(default=None, max_length=100)

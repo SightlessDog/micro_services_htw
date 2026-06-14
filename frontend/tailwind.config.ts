@@ -5,12 +5,17 @@ export default {
   theme: {
     extend: {
       colors: {
-        bg: '#0c0c0e',
-        surface: '#16161a',
-        elevated: '#1e1e24',
-        border: '#2a2a35',
-        accent: '#f59e0b',
-        'accent-dim': '#d97706',
+        bg: '#f1f1f6',
+        surface: '#fbfbfe',
+        elevated: '#e8e8f0',
+        border: '#dcdce6',
+        'border-strong': '#c4c4d8',
+        text: '#1c1c27',
+        'text-muted': '#6b6b80',
+        'text-faint': '#9999ad',
+        'text-placeholder': '#b6b6c8',
+        accent: '#d97706',
+        'accent-dim': '#b45309',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],

@@ -1,9 +1,30 @@
 export interface User {
-  id: number
+  id: string
+  email: string
+  name: string
+  roles: string[]
+}
+
+export interface UserProfile {
+  id: string
   email: string
   full_name: string
   is_active: boolean
   created_at: string
+  phone_number: string | null
+  address_street: string | null
+  address_city: string | null
+  address_postal_code: string | null
+  address_country: string | null
+}
+
+export interface UserProfileUpdate {
+  full_name?: string
+  phone_number?: string | null
+  address_street?: string | null
+  address_city?: string | null
+  address_postal_code?: string | null
+  address_country?: string | null
 }
 
 export interface Product {
@@ -17,7 +38,7 @@ export interface Product {
   updatedAt: string
 }
 
-export interface OrderItem {
+interface OrderItem {
   product_id: number
   name: string
   quantity: number
@@ -27,10 +48,10 @@ export interface OrderItem {
 
 export interface Order {
   id: string
-  user_id: number
+  userId: string
   items: OrderItem[]
   total: number
   status: 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled'
-  created_at: string
-  updated_at: string
+  createdAt: string
+  updatedAt: string
 }

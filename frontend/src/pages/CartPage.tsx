@@ -26,7 +26,7 @@ export function CartPage() {
     return (
       <main className="max-w-6xl mx-auto px-6 py-10">
         <h1 className="text-3xl font-semibold tracking-tight mb-8">Cart</h1>
-        <div className="card flex flex-col items-center py-20 gap-4 text-[#8888a0]">
+        <div className="card flex flex-col items-center py-20 gap-4 text-text-muted">
           <p>Your cart is empty.</p>
           <Link to="/products">
             <Button variant="ghost">Browse products</Button>
@@ -46,13 +46,14 @@ export function CartPage() {
             <div key={product.id} className="card flex items-center gap-4">
               <div className="flex-1 min-w-0">
                 <p className="font-medium truncate">{product.name}</p>
-                <p className="text-sm text-[#8888a0]">${Number(product.price).toFixed(2)} each</p>
+                <p className="text-sm text-text-muted">${Number(product.price).toFixed(2)} each</p>
               </div>
 
               <div className="flex items-center gap-1.5 shrink-0">
                 <button
                   onClick={() => update(product.id, quantity - 1)}
-                  className="w-7 h-7 rounded border border-border text-[#8888a0] hover:text-[#e8e8f0] hover:border-[#3a3a50] text-sm transition-colors"
+                  aria-label="Decrease quantity"
+                  className="w-7 h-7 rounded-lg border border-border text-text-muted hover:text-text hover:border-border-strong text-sm transition-colors outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
                 >
                   −
                 </button>
@@ -60,7 +61,8 @@ export function CartPage() {
                 <button
                   onClick={() => update(product.id, quantity + 1)}
                   disabled={quantity >= product.stock}
-                  className="w-7 h-7 rounded border border-border text-[#8888a0] hover:text-[#e8e8f0] hover:border-[#3a3a50] text-sm transition-colors disabled:opacity-30"
+                  aria-label="Increase quantity"
+                  className="w-7 h-7 rounded-lg border border-border text-text-muted hover:text-text hover:border-border-strong text-sm transition-colors disabled:opacity-40 outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
                 >
                   +
                 </button>
@@ -72,7 +74,7 @@ export function CartPage() {
 
               <button
                 onClick={() => remove(product.id)}
-                className="text-[#444458] hover:text-red-400 transition-colors shrink-0"
+                className="text-text-placeholder hover:text-red-700 transition-colors shrink-0 p-1.5 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
                 aria-label="Remove"
               >
                 <TrashIcon />
@@ -81,15 +83,15 @@ export function CartPage() {
           ))}
         </div>
 
-        <div className="card h-fit space-y-4">
-          <h2 className="text-[10px] font-semibold text-[#8888a0] uppercase tracking-widest">
+        <div className="card h-fit space-y-4 lg:sticky lg:top-20 lg:self-start">
+          <h2 className="text-[10px] font-semibold text-text-muted uppercase tracking-widest">
             Summary
           </h2>
 
           <div className="space-y-2">
             {items.map(({ product, quantity }) => (
               <div key={product.id} className="flex justify-between text-sm gap-2">
-                <span className="text-[#8888a0] truncate flex-1">
+                <span className="text-text-muted truncate flex-1">
                   {product.name} × {quantity}
                 </span>
                 <span className="font-mono shrink-0">
@@ -105,7 +107,7 @@ export function CartPage() {
           </div>
 
           {error && (
-            <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
+            <p className="text-xs text-red-700 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
               {error}
             </p>
           )}
@@ -116,7 +118,7 @@ export function CartPage() {
 
           <button
             onClick={clear}
-            className="w-full text-xs text-[#444458] hover:text-[#8888a0] transition-colors py-1"
+            className="w-full text-xs text-text-placeholder hover:text-text-muted transition-colors py-1 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
           >
             Clear cart
           </button>

@@ -3,11 +3,22 @@
 @tailwind utilities;
 
 @layer base {
-  html { color-scheme: dark; }
+  html { color-scheme: light; }
 
   body {
-    @apply bg-bg text-[#e8e8f0] font-sans antialiased;
+    @apply bg-bg text-text font-sans antialiased;
     min-height: 100vh;
+  }
+}
+
+@layer utilities {
+  @keyframes blink {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+  }
+
+  .animate-blink {
+    animation: blink 1s step-end infinite;
   }
 }
 
@@ -18,8 +29,17 @@
 
   .input-base {
     @apply w-full bg-elevated border border-border rounded-lg px-4 py-2.5
-           text-[#e8e8f0] placeholder-[#444458] outline-none
+           text-text placeholder-text-placeholder outline-none
            focus:border-accent/50 focus:ring-1 focus:ring-accent/15
+           disabled:opacity-50 disabled:cursor-not-allowed
            transition-colors;
+  }
+
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
   }
 }

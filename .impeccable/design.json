@@ -1,0 +1,183 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-06-13T00:00:00Z",
+  "title": "Design System: CRATE",
+  "extensions": {
+    "colorMeta": {
+      "bg": {
+        "role": "neutral",
+        "displayName": "Void",
+        "canonical": "#0c0c0e",
+        "tonalRamp": ["#0c0c0e", "#16161a", "#1e1e24", "#2a2a35", "#3a3a50", "#555570", "#8888a0", "#e8e8f0"]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Surface",
+        "canonical": "#16161a",
+        "tonalRamp": ["#0c0c0e", "#16161a", "#1e1e24", "#2a2a35", "#3a3a50", "#555570", "#8888a0", "#e8e8f0"]
+      },
+      "elevated": {
+        "role": "neutral",
+        "displayName": "Elevated",
+        "canonical": "#1e1e24",
+        "tonalRamp": ["#0c0c0e", "#16161a", "#1e1e24", "#2a2a35", "#3a3a50", "#555570", "#8888a0", "#e8e8f0"]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Border",
+        "canonical": "#2a2a35",
+        "tonalRamp": ["#0c0c0e", "#16161a", "#1e1e24", "#2a2a35", "#3a3a50", "#555570", "#8888a0", "#e8e8f0"]
+      },
+      "border-strong": {
+        "role": "neutral",
+        "displayName": "Border, Strong",
+        "canonical": "#3a3a50",
+        "tonalRamp": ["#0c0c0e", "#16161a", "#1e1e24", "#2a2a35", "#3a3a50", "#555570", "#8888a0", "#e8e8f0"]
+      },
+      "text": {
+        "role": "neutral",
+        "displayName": "Text",
+        "canonical": "#e8e8f0",
+        "tonalRamp": ["#0c0c0e", "#16161a", "#1e1e24", "#2a2a35", "#3a3a50", "#555570", "#8888a0", "#e8e8f0"]
+      },
+      "text-muted": {
+        "role": "neutral",
+        "displayName": "Text, Muted",
+        "canonical": "#8888a0"
+      },
+      "text-faint": {
+        "role": "neutral",
+        "displayName": "Text, Faint",
+        "canonical": "#555570"
+      },
+      "text-placeholder": {
+        "role": "neutral",
+        "displayName": "Text, Placeholder",
+        "canonical": "#444458"
+      },
+      "accent": {
+        "role": "primary",
+        "displayName": "Warm Amber Signal",
+        "canonical": "#f59e0b",
+        "tonalRamp": ["#451a03", "#78350f", "#92400e", "#b45309", "#d97706", "#f59e0b", "#fbbf24", "#fde68a"]
+      },
+      "accent-dim": {
+        "role": "primary",
+        "displayName": "Warm Amber Signal, Dimmed",
+        "canonical": "#d97706",
+        "tonalRamp": ["#451a03", "#78350f", "#92400e", "#b45309", "#d97706", "#f59e0b", "#fbbf24", "#fde68a"]
+      },
+      "status-pending": { "role": "status", "displayName": "Pending", "canonical": "#fbbf24" },
+      "status-confirmed": { "role": "status", "displayName": "Confirmed", "canonical": "#60a5fa" },
+      "status-shipped": { "role": "status", "displayName": "Shipped", "canonical": "#a78bfa" },
+      "status-delivered": { "role": "status", "displayName": "Delivered", "canonical": "#4ade80" },
+      "status-cancelled": { "role": "status", "displayName": "Cancelled", "canonical": "#f87171" }
+    },
+    "typographyMeta": {
+      "headline": { "displayName": "Headline", "purpose": "Top-level page titles (Products, Orders)." },
+      "title": { "displayName": "Title", "purpose": "Single-purpose screen headers (Sign in)." },
+      "body": { "displayName": "Body", "purpose": "Default UI text, descriptions, metadata." },
+      "label": { "displayName": "Label", "purpose": "Input labels, badge text, the CRATE wordmark." },
+      "data": { "displayName": "Data / Mono", "purpose": "Prices, order IDs, the CRATE wordmark." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "press", "value": "transform 0.15s ease-out, opacity 0.15s ease-out", "purpose": "active:scale-[0.97] press feedback on buttons." },
+      { "name": "state-transition", "value": "background-color 0.15s ease-out, border-color 0.15s ease-out, color 0.15s ease-out", "purpose": "Default transition for hover/focus/active state changes on buttons, links, cards, inputs." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Default call-to-action: add to cart, continue, confirm.",
+      "html": "<button class=\"ds-btn-primary\">Add to cart</button>",
+      "css": ".ds-btn-primary { background: #f59e0b; color: #000000; font-family: Inter, system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; padding: 8px 16px; border: none; border-radius: 8px; transition: background-color 0.15s ease-out, transform 0.15s ease-out; } .ds-btn-primary:hover { background: #d97706; } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.4); } .ds-btn-primary:active { transform: scale(0.97); } .ds-btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Secondary action: sign out, in-cart toggle.",
+      "html": "<button class=\"ds-btn-ghost\">Sign out</button>",
+      "css": ".ds-btn-ghost { background: transparent; color: #e8e8f0; font-family: Inter, system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; padding: 8px 16px; border: 1px solid #2a2a35; border-radius: 8px; transition: background-color 0.15s ease-out, border-color 0.15s ease-out; } .ds-btn-ghost:hover { background: #1e1e24; border-color: #3a3a50; } .ds-btn-ghost:active { transform: scale(0.97); }"
+    },
+    {
+      "name": "Danger Button",
+      "kind": "button",
+      "refersTo": "button-danger",
+      "description": "Destructive action: cancel order.",
+      "html": "<button class=\"ds-btn-danger\">Cancel</button>",
+      "css": ".ds-btn-danger { background: rgba(248, 113, 113, 0.15); color: #f87171; font-family: Inter, system-ui, sans-serif; font-size: 0.75rem; font-weight: 500; padding: 6px 12px; border: 1px solid rgba(153, 27, 27, 0.4); border-radius: 8px; transition: background-color 0.15s ease-out; } .ds-btn-danger:hover { background: rgba(248, 113, 113, 0.25); }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Standard form field with label.",
+      "html": "<div class=\"ds-field\"><label class=\"ds-label\">Email</label><input class=\"ds-input\" type=\"text\" placeholder=\"you@example.com\" /></div>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 6px; } .ds-label { font-family: Inter, system-ui, sans-serif; font-size: 0.625rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: #8888a0; } .ds-input { width: 100%; background: #1e1e24; border: 1px solid #2a2a35; border-radius: 8px; padding: 10px 16px; color: #e8e8f0; font-family: Inter, system-ui, sans-serif; font-size: 0.875rem; outline: none; transition: border-color 0.15s ease-out, box-shadow 0.15s ease-out; } .ds-input::placeholder { color: #444458; } .ds-input:focus { border-color: rgba(245, 158, 11, 0.5); box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.15); }"
+    },
+    {
+      "name": "Status Badge",
+      "kind": "chip",
+      "refersTo": "badge",
+      "description": "Order status indicator; default + semantic variants.",
+      "html": "<span class=\"ds-badge ds-badge-pending\">pending</span>",
+      "css": ".ds-badge { display: inline-flex; align-items: center; font-family: Inter, system-ui, sans-serif; font-size: 0.625rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; padding: 2px 8px; border-radius: 9999px; } .ds-badge-default { background: #2a2a35; color: #8888a0; } .ds-badge-pending { background: rgba(251, 191, 36, 0.12); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.25); }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Base surface for product cards, order rows, panels.",
+      "html": "<div class=\"ds-card\"><h3 class=\"ds-card-title\">Product name</h3><p class=\"ds-card-body\">Short description goes here.</p></div>",
+      "css": ".ds-card { background: #16161a; border: 1px solid #2a2a35; border-radius: 12px; padding: 24px; transition: border-color 0.15s ease-out; } .ds-card:hover { border-color: #3a3a50; } .ds-card-title { font-family: Inter, system-ui, sans-serif; font-size: 0.875rem; font-weight: 600; color: #e8e8f0; margin: 0 0 4px; } .ds-card-body { font-family: Inter, system-ui, sans-serif; font-size: 0.875rem; color: #8888a0; margin: 0; }"
+    },
+    {
+      "name": "Nav Link",
+      "kind": "nav",
+      "refersTo": "nav-link",
+      "description": "Header navigation item, default and active states.",
+      "html": "<a class=\"ds-nav-link ds-nav-link-active\" href=\"#\">Products</a>",
+      "css": ".ds-nav-link { font-family: Inter, system-ui, sans-serif; font-size: 0.875rem; padding: 6px 12px; border-radius: 8px; color: #8888a0; text-decoration: none; transition: color 0.15s ease-out, background-color 0.15s ease-out; } .ds-nav-link:hover { color: #e8e8f0; background: rgba(30, 30, 36, 0.6); } .ds-nav-link-active { color: #e8e8f0; background: #1e1e24; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Quiet Console",
+    "overview": "CRATE reads like a well-built internal tool that happens to sell things: a near-black surface, cool slate-violet neutrals, and a single warm amber signal reserved for the moments that matter (price, primary action, \"you are here\"). Inter carries every word; monospace is held back for the things that are actually data, prices, order IDs, the CRATE wordmark, so the UI never confuses decoration with information.\n\nThis system explicitly rejects the generic admin-template look (sidebar-plus-cards with no point of view), the bright SaaS gradient aesthetic (gradient text, glassmorphism-as-default, hero-metric blocks), and identical icon-heading-text card grids repeated endlessly. Storefront and admin share the same components at two densities rather than splitting into separate visual languages.",
+    "keyCharacteristics": [
+      "Near-black, violet-tinted dark surface with three tonal steps (bg / surface / elevated)",
+      "One accent color (amber), used sparingly and consistently",
+      "Inter for all UI text; monospace exclusively for prices, IDs, and the wordmark",
+      "Flat by default, no shadows, depth via tonal layering and a single backdrop-blur header",
+      "Full borders only, 1px, never colored side-stripes"
+    ],
+    "rules": [
+      { "name": "The Single Accent Rule", "body": "Warm Amber Signal appears in exactly four places: prices, the primary button, the active nav state, and focus rings. It never decorates headings, borders, or backgrounds elsewhere. Its rarity is what makes it register as \"signal\".", "section": "colors" },
+      { "name": "The Status-Stays-In-Badges Rule", "body": "The five semantic status colors (pending/confirmed/shipped/delivered/cancelled) exist only inside Badge and the danger Button variant. They never appear as page backgrounds, headings, or nav states.", "section": "colors" },
+      { "name": "The Mono-for-Data Rule", "body": "If a value is a price, an ID, or the wordmark, it's monospace and semibold. If it's a label, a sentence, or a heading, it's Inter. No exceptions, no mixing within a single line of text.", "section": "typography" },
+      { "name": "The Flat-by-Default Rule", "body": "Surfaces never cast shadows. Depth is conveyed by moving up the Void to Surface to Elevated ladder and by border-strong on hover, never by box-shadow.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep Warm Amber Signal to prices, the primary button, active nav, and focus rings only (The Single Accent Rule).",
+      "Do render prices, order IDs, and the CRATE wordmark in monospace, semibold (The Mono-for-Data Rule).",
+      "Do build depth from Void to Surface to Elevated plus 1px borders; the sticky header's backdrop-blur is the only translucency.",
+      "Do give admin views the same components as the storefront, just denser (more rows/columns, tighter spacing), per PRODUCT.md's \"one system, two densities\".",
+      "Do make every hover/focus/active state explicit: border-lighten to #3a3a50, background shift to Elevated, or the amber focus ring, never a bare default browser outline."
+    ],
+    "donts": [
+      "Don't build a \"generic Bootstrap/Material admin dashboard\", no sidebar-plus-cards layout with no point of view.",
+      "Don't use gradient text, glassmorphism-as-default, or a bright SaaS gradient hero/card look.",
+      "Don't repeat identical icon+heading+text cards endlessly; vary layout and density by content.",
+      "Don't use border-left/border-right greater than 1px as a colored accent stripe on cards, badges, or alerts.",
+      "Don't add box-shadow anywhere, flat by default.",
+      "Don't spread the five status colors outside Badge/danger Button, they're semantic, not decorative."
+    ]
+  }
+}
