@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 public class OrderPlacedEvent {
     private String orderId;
-    private Integer userId;
+    private String userId;
     private String userEmail;
     private List<OrderItem> items;
     private BigDecimal total;
