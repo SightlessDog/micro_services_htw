@@ -104,7 +104,7 @@ const userSvc = cloudRunService("user-service", [
     { name: "ZITADEL_AUDIENCE",      value: zitadelClientId },
     { name: "ZITADEL_JWKS_URL",      value: `${zitadelIssuer}/oauth/v2/keys` },
     { name: "ZITADEL_USERINFO_URL",  value: `${zitadelIssuer}/oidc/v1/userinfo` },
-]);
+], "512Mi", 8000);
 
 const productSvc = cloudRunService("product-service", [
     { name: "SPRING_DATASOURCE_URL",      value: neonProductJdbcUrl },
@@ -118,7 +118,7 @@ const productSvc = cloudRunService("product-service", [
     { name: "KAFKA_SECURITY_PROTOCOL",    value: "SASL_SSL" },
     { name: "KAFKA_SASL_MECHANISM",       value: "SCRAM-SHA-256" },
     { name: "KAFKA_SASL_JAAS_CONFIG",     value: kafkaJaasConfig },
-], "1Gi"); // Spring Boot needs more heap
+], "1Gi", 8081); // Spring Boot needs more heap
 
 const orderSvc = cloudRunService("order-service", [
     { name: "DATABASE_URL",          value: neonOrderDbUrl },
@@ -128,11 +128,10 @@ const orderSvc = cloudRunService("order-service", [
     { name: "ZITADEL_USERINFO_URL",  value: `${zitadelIssuer}/oidc/v1/userinfo` },
     { name: "USER_SERVICE_URL",      value: userSvc.uri },
     { name: "PRODUCT_SERVICE_URL",   value: productSvc.uri },
-    { name: "PORT",                  value: "3000" },
     { name: "KAFKA_BROKERS",         value: kafkaBrokers },
     { name: "KAFKA_SASL_USERNAME",   value: kafkaUsername },
     { name: "KAFKA_SASL_PASSWORD",   value: kafkaPassword },
-]);
+], "512Mi", 3000);
 
 const notifSvc = cloudRunService("notification-service", [
     { name: "KAFKA_BROKERS",       value: kafkaBrokers },
@@ -144,8 +143,7 @@ const notifSvc = cloudRunService("notification-service", [
     { name: "SMTP_USER",           value: "resend" },
     { name: "SMTP_PASS",           value: resendApiKey },
     { name: "SMTP_SECURE",         value: "true" },
-    { name: "PORT",                value: "3001" },
-]);
+], "512Mi", 3001);
 
 // Zitadel host for nginx Host header (without scheme or port)
 const zitadelHost = zitadelIssuer.replace(/^https?:\/\//, "");
@@ -164,6 +162,8 @@ const frontendSvc = cloudRunService("frontend", [
     { name: "VITE_ZITADEL_ISSUER",    value: zitadelIssuer },
     { name: "VITE_ZITADEL_CLIENT_ID", value: zitadelClientId },
     { name: "VITE_ZITADEL_ORG_ID",    value: zitadelOrgId },
+    { name: "GATEWAY_URL",            value: gatewaySvc.uri },
+    { name: "NGINX_ENVSUBST_FILTER",  value: "^GATEWAY_URL$" },
 ], "512Mi", 80);
 
 // ── Exports ───────────────────────────────────────────────────────────────

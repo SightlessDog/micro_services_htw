@@ -6,6 +6,8 @@ services:
       VITE_ZITADEL_ISSUER: "http://${ZITADEL_EXTERNALDOMAIN}:${ZITADEL_EXTERNALPORT}"
       VITE_ZITADEL_CLIENT_ID: ${ZITADEL_CLIENT_ID}
       VITE_ZITADEL_ORG_ID: ${ZITADEL_ORG_ID}
+      GATEWAY_URL: "http://gateway:80"
+      NGINX_ENVSUBST_FILTER: "^GATEWAY_URL$"
     ports:
       - "5173:80"
     depends_on:

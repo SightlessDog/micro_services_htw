@@ -16,7 +16,10 @@ server {
         if ($http_accept ~* "text/html") {
             rewrite ^ /index.html last;
         }
-        proxy_pass http://gateway:80;
+        # GATEWAY_URL injected by envsubst at container start.
+        # Local dev: http://gateway:80   Cloud Run: https://...-xxx.run.app
+        proxy_pass ${GATEWAY_URL};
+        proxy_ssl_server_name on;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
     }
