@@ -64,6 +64,7 @@ function cloudRunService(
     name: string,
     envs: Env[],
     memory = "512Mi",
+    containerPort?: number,
 ): gcp.cloudrunv2.Service {
     const svc = new gcp.cloudrunv2.Service(name, {
         name: pulumi.interpolate`${stack}-${name}`,
@@ -75,6 +76,7 @@ function cloudRunService(
                 image: pulumi.interpolate`${imageBase}/${name}:${imageTag}`,
                 envs,
                 resources: { limits: { memory, cpu: "1" } },
+                ports: containerPort ? { containerPort } : undefined,
             }],
             scaling: { minInstanceCount: minInstances, maxInstanceCount: 5 },
         },
@@ -156,13 +158,13 @@ const gatewaySvc = cloudRunService("gateway", [
     { name: "ZITADEL_HOST_HEADER",  value: zitadelHost },
     // Filter tells nginx envsubst which vars to substitute (leaves $host, $remote_addr etc. intact)
     { name: "NGINX_ENVSUBST_FILTER", value: "^ZITADEL_|_SERVICE_URL$" },
-]);
+], "512Mi", 80);
 
 const frontendSvc = cloudRunService("frontend", [
     { name: "VITE_ZITADEL_ISSUER",    value: zitadelIssuer },
     { name: "VITE_ZITADEL_CLIENT_ID", value: zitadelClientId },
     { name: "VITE_ZITADEL_ORG_ID",    value: zitadelOrgId },
-]);
+], "512Mi", 80);
 
 // ── Exports ───────────────────────────────────────────────────────────────
 export const frontendUrl = frontendSvc.uri;
