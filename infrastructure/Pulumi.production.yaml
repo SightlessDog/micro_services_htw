@@ -20,5 +20,5 @@ config:
   crate-infra:zitadelClientId: "378095773759377500"
   crate-infra:zitadelOrgId: "378094154841919580gc"
   crate-infra:smtpHost: smtp.resend.com
-  crate-infra:smtpPort: "587"
+  crate-infra:smtpPort: "465"
   crate-infra:smtpFrom: noreply@crate.com
