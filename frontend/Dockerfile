@@ -15,6 +15,7 @@ RUN npm run build
 
 FROM nginx:alpine AS runner
 COPY --from=build /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/nginx.conf
 COPY templates /etc/nginx/templates
 COPY docker-entrypoint.d/40-inject-config.sh /docker-entrypoint.d/40-inject-config.sh
 RUN chmod +x /docker-entrypoint.d/40-inject-config.sh
