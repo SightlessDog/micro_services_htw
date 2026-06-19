@@ -7,7 +7,7 @@ on:
 env:
   REGION: europe-west1
   REGISTRY: europe-west1-docker.pkg.dev
-  PULUMI_STACK: production
+  PULUMI_STACK: SightlessDog/crate-infra/production
 
 jobs:
   deploy:
