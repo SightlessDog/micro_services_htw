@@ -46,6 +46,15 @@ jobs:
 
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install infra dependencies
+        working-directory: infrastructure
+        run: npm ci
+
       - name: Deploy with Pulumi
         uses: pulumi/actions@v7
         with:
