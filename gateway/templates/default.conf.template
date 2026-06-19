@@ -26,6 +26,11 @@ server {
     # Throttle proxied API + identity endpoints; allow short bursts.
     limit_req zone=gateway_limit burst=40 nodelay;
 
+    # Cloud Run hostnames resolve to many IPs; nginx's default retry-next-IP
+    # behavior on a single failed attempt can fan one client request into a
+    # rapid internal retry storm. One attempt only — fail fast instead.
+    proxy_next_upstream off;
+
     # Service URLs injected by envsubst at container start.
     # Local dev: http://user-service:8000   Cloud Run: https://...-xxx.run.app
     # proxy_ssl_server_name is a no-op for plain HTTP, required for HTTPS (Cloud Run).

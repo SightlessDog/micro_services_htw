@@ -35,6 +35,11 @@ server {
         proxy_buffer_size 16k;
         proxy_buffers 4 16k;
         proxy_busy_buffers_size 24k;
+
+        # Cloud Run hostnames resolve to many IPs; nginx's default retry-next-IP
+        # behavior on a single failed attempt can fan one client request into a
+        # rapid internal retry storm. One attempt only — fail fast instead.
+        proxy_next_upstream off;
     }
 
     location / {
