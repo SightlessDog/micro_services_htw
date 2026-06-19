@@ -5,9 +5,18 @@ import { renderOrderCancelled, renderOrderPlaced } from "./templates";
 import type { OrderEvent } from "./types";
 import { parseOrderEvent } from "./validation";
 
+// KAFKA_SASL_USERNAME present = Upstash (cloud); absent = plain Kafka (local dev)
 const kafka = new Kafka({
   clientId: "notification-service",
   brokers: (process.env.KAFKA_BROKERS || "kafka:9092").split(","),
+  ...(process.env.KAFKA_SASL_USERNAME && {
+    ssl: true,
+    sasl: {
+      mechanism: "scram-sha-256" as const,
+      username: process.env.KAFKA_SASL_USERNAME,
+      password: process.env.KAFKA_SASL_PASSWORD!,
+    },
+  }),
 });
 
 const consumer = kafka.consumer({ groupId: "notification-service" });

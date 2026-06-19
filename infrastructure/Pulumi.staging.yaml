@@ -1,0 +1,43 @@
+# Stack config for the staging environment (develop branch).
+# Secrets must be set separately with: pulumi config set --secret <key> <value> --stack staging
+#
+# Required secrets (run these once after stack init):
+#   pulumi config set --secret neonUserDbUrl "postgresql://..."     --stack staging
+#   pulumi config set --secret neonOrderDbUrl "postgresql://..."    --stack staging
+#   pulumi config set --secret neonProductJdbcUrl "jdbc:postgresql://..." --stack staging
+#   pulumi config set --secret neonProductDbUser "..."              --stack staging
+#   pulumi config set --secret neonProductDbPass "..."              --stack staging
+#   pulumi config set --secret kafkaBrokers "host:9092"             --stack staging
+#   pulumi config set --secret kafkaUsername "..."                  --stack staging
+#   pulumi config set --secret kafkaPassword "..."                  --stack staging
+#   pulumi config set --secret resendApiKey "re_..."                --stack staging
+config:
+  gcp:project: crate-htw-project
+  gcp:region: europe-west1
+  crate-infra:region: europe-west1
+  crate-infra:minInstances: "0"
+  crate-infra:zitadelIssuer: https://crate-test-ffikwi.eu1.zitadel.cloud
+  crate-infra:zitadelClientId: "378095773759377500"
+  crate-infra:zitadelOrgId: "378094154841919580gc"
+  crate-infra:smtpHost: smtp.resend.com
+  crate-infra:smtpPort: "587"
+  crate-infra:smtpFrom: noreply@crate.com
+  crate-infra:neonUserDbUrl:
+    secure: AAABAKY0BKWEjwXIQw+ZU9m/xMNAkZ0jGRV7KMwV3lyRCoQ+1JscZGcjC1MvxAoRg9I96TDIAIlSaLr3utExnzCfqis8umBzrkNm7yTBnGK7YY71fO2BP5hwe0kfGugavHbgyQPMmLhUomcmudmDexMGZ+lRdvn8XoimusGq1wC5eqJdgFY1hgrlhSCLZYwC5a/ipjvyWkfVg8pvuh5fwNOIH3wWObllP/ujAtzzzkatOgGIb0u1
+  crate-infra:neonOrderDbUrl:
+    secure: AAABAJP7gEcE8n5NgY4+JtLcWo6mSod0EPL9JXS/vQDdXrH5+r59J748Azks6DUYlrjJedC+YspAK9Fwmiw8/S82RogUhlFQKd060zmHJyftTbvUgR/AZMujnBwiszdWdAM4mi5H8duVMDMZrYJtdCwBUe0dhnGZ4xdM7EbHQugB5lG8Q8WbIb2ltDxPCWJDTNHy4GTmb0xF3V7yiA4wHzJt/esQ5aazkou6aXxZloddEjpjxRAx8fU=
+  crate-infra:neonProductJdbcUrl:
+    secure: AAABAHPcJ8JoKWhrMtcvvn5jcDj3V9oAQknmWW52UZfaKQK3gnpOFWwAn0/yZI5JQ+crOty8ZFNP6U2aW/R7mCjnXCqGo+zrcy17uV1B2pEYPKB3HE4rgYtElYZ553b5jUm26v1GFTkydP3tXcFfUEUm8+QH0ZO0UcjEzAwRAuYy0j9V6ILF1FvglWEAvsdkzOklMv/Aeo7N2UYV80pL6GdNt2bSvR/2gLVUKZkD1e7N6gIGqyEj1zsd
+  crate-infra:neonProductDbUser:
+    secure: AAABAHXmXKB7PegoVamjXhtSVAFfm2l3ls4TOOrm65Fci11rtXxDkYprOKc=
+  crate-infra:neonProductDbPass:
+    secure: AAABAJiKMTzKr8fPRMzlVKrb1JqNpbOFfC10CKWtblintRGAFae0AbSncgpe8kT2
+  crate-infra:kafkaBrokers:
+    secure: AAABAD+mvG86WehhZ4lhN8cWYd7KnWMiUK8lxD3oU2qjw/LQrQb33sjQaD2KjTiHb+suYkuhwLsDO5KOwBnU+iY+qP46QRjJrF04dHBqB828xn7nhp9Tr4R5YGLtaAvcZGcSWDI=
+  crate-infra:kafkaUsername:
+    secure: AAABAE+XrhgAFj2Wel59beTu6elaH3Knfd+3C7ZZPDRD+aDKSBs=
+  crate-infra:kafkaPassword:
+    secure: AAABAGvLE38f8TdA3PDqsUdpG2uuIPlFiIZEiOVsH/faGjWQXQQnJRHoWiUXXwtSjeT74kaQ9p0VOxpUPSs=
+  crate-infra:resendApiKey:
+    secure: AAABAI1heHAOZrUYkeGqwePE0v6hSF4Q9R6gRuXh978//KirwCKNLwNqUxhr15BtFvlw3vXkty9xFL9N8BTFD6eIMqA=
+  crate-infra:imageTag: local-test

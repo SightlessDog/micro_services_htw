@@ -1,0 +1,1 @@
+{"version":3,"file":"productClient.js","sourceRoot":"","sources":["../../src/services/productClient.ts"],"names":[],"mappings":";;;;;AAaA,gCAGC;AAhBD,kDAA0B;AAE1B,MAAM,QAAQ,GAAG,OAAO,CAAC,GAAG,CAAC,mBAAmB,IAAI,6BAA6B,CAAC;AAW3E,KAAK,UAAU,UAAU,CAAC,SAA0B;IACzD,MAAM,GAAG,GAAG,MAAM,eAAK,CAAC,GAAG,CAAU,GAAG,QAAQ,aAAa,SAAS,EAAE,CAAC,CAAC;IAC1E,OAAO,GAAG,CAAC,IAAI,CAAC;AAClB,CAAC"}

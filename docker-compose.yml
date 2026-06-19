@@ -18,9 +18,16 @@ services:
     environment:
       ZITADEL_EXTERNALDOMAIN: ${ZITADEL_EXTERNALDOMAIN}
       ZITADEL_EXTERNALPORT: ${ZITADEL_EXTERNALPORT}
-      # Only substitute ZITADEL_* vars in templates; leave nginx's own
-      # `$host`/`$remote_addr` etc. and any other env untouched.
-      NGINX_ENVSUBST_FILTER: "^ZITADEL_"
+      # Service URLs for local dev (docker network names).
+      # Cloud Run overrides these with actual Cloud Run URIs via Pulumi.
+      USER_SERVICE_URL: "http://user-service:8000"
+      PRODUCT_SERVICE_URL: "http://product-service:8081"
+      ORDER_SERVICE_URL: "http://order-service:3000"
+      ZITADEL_PROXY_URL: "http://zitadel:8080"
+      ZITADEL_HOST_HEADER: "${ZITADEL_EXTERNALDOMAIN}:${ZITADEL_EXTERNALPORT}"
+      # Substitute service URL vars + all ZITADEL_* vars; leave nginx's own
+      # $host/$remote_addr etc. untouched.
+      NGINX_ENVSUBST_FILTER: "^ZITADEL_|_SERVICE_URL$"
     ports:
       - "8080:80"
     volumes:

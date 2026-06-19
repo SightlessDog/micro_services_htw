@@ -18,32 +18,38 @@ server {
     # Throttle proxied API + identity endpoints; allow short bursts.
     limit_req zone=gateway_limit burst=40 nodelay;
 
+    # Service URLs injected by envsubst at container start.
+    # Local dev: http://user-service:8000   Cloud Run: https://...-xxx.run.app
+    # proxy_ssl_server_name is a no-op for plain HTTP, required for HTTPS (Cloud Run).
     location /users {
-        proxy_pass http://user_service;
+        proxy_pass ${USER_SERVICE_URL};
+        proxy_ssl_server_name on;
     }
 
     location /products {
-        proxy_pass http://product_service;
+        proxy_pass ${PRODUCT_SERVICE_URL};
+        proxy_ssl_server_name on;
     }
 
     location /orders {
-        proxy_pass http://order_service;
+        proxy_pass ${ORDER_SERVICE_URL};
+        proxy_ssl_server_name on;
     }
 
-    # Internal JWKS proxy — backend services fetch from here so Host
-    # reaches Zitadel correctly (JDK HttpURLConnection won't let apps set Host).
-    # Host must match ZITADEL_EXTERNALDOMAIN:ZITADEL_EXTERNALPORT (the issuer)
-    # — userinfo validates this, JWKS happens to tolerate a mismatch.
+    # JWKS + userinfo proxy — backends always hit gateway so Host header is correct.
+    # ZITADEL_PROXY_URL: local = http://zitadel:8080, Cloud Run = https://tenant.zitadel.cloud
+    # ZITADEL_HOST_HEADER: local = localhost:8081 (self-hosted Zitadel requires it),
+    #                       Cloud Run = tenant.zitadel.cloud
     location /oauth/v2/keys {
-        proxy_pass http://zitadel:8080/oauth/v2/keys;
-        proxy_set_header Host ${ZITADEL_EXTERNALDOMAIN}:${ZITADEL_EXTERNALPORT};
+        proxy_pass ${ZITADEL_PROXY_URL}/oauth/v2/keys;
+        proxy_set_header Host ${ZITADEL_HOST_HEADER};
+        proxy_ssl_server_name on;
     }
 
-    # Internal userinfo proxy — user-service resolves email/name for access
-    # tokens that only carry `sub` (same Host-rewrite reason as above).
     location /oidc/v1/userinfo {
-        proxy_pass http://zitadel:8080/oidc/v1/userinfo;
-        proxy_set_header Host ${ZITADEL_EXTERNALDOMAIN}:${ZITADEL_EXTERNALPORT};
+        proxy_pass ${ZITADEL_PROXY_URL}/oidc/v1/userinfo;
+        proxy_set_header Host ${ZITADEL_HOST_HEADER};
+        proxy_ssl_server_name on;
     }
 
     location /health {

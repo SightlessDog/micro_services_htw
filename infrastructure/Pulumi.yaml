@@ -1,0 +1,6 @@
+name: crate-infra
+runtime:
+  name: nodejs
+  options:
+    typescript: true
+description: Crate GCP infrastructure (Cloud Run + Artifact Registry)

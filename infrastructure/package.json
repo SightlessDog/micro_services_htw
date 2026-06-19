@@ -1,0 +1,12 @@
+{
+  "name": "ecommerce-infra",
+  "version": "1.0.0",
+  "dependencies": {
+    "@pulumi/gcp": "^9.27.0",
+    "@pulumi/pulumi": "^3.247.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.3",
+    "typescript": "^6.0.3"
+  }
+}

@@ -1,0 +1,24 @@
+# Stack config for the production environment (main branch).
+# Secrets must be set separately with: pulumi config set --secret <key> <value> --stack production
+#
+# Required secrets (same keys as staging, different values):
+#   pulumi config set --secret neonUserDbUrl "postgresql://..."     --stack production
+#   pulumi config set --secret neonOrderDbUrl "postgresql://..."    --stack production
+#   pulumi config set --secret neonProductJdbcUrl "jdbc:postgresql://..." --stack production
+#   pulumi config set --secret neonProductDbUser "..."              --stack production
+#   pulumi config set --secret neonProductDbPass "..."              --stack production
+#   pulumi config set --secret kafkaBrokers "host:9092"             --stack production
+#   pulumi config set --secret kafkaUsername "..."                  --stack production
+#   pulumi config set --secret kafkaPassword "..."                  --stack production
+#   pulumi config set --secret resendApiKey "re_..."                --stack production
+config:
+  gcp:project: crate-htw-project-production
+  gcp:region: europe-west1
+  crate-infra:region: europe-west1
+  crate-infra:minInstances: "1"
+  crate-infra:zitadelIssuer: https://crate-test-ffikwi.eu1.zitadel.cloud
+  crate-infra:zitadelClientId: "378095773759377500"
+  crate-infra:zitadelOrgId: "378094154841919580gc"
+  crate-infra:smtpHost: smtp.resend.com
+  crate-infra:smtpPort: "587"
+  crate-infra:smtpFrom: noreply@crate.com
