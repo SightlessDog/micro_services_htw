@@ -8,6 +8,14 @@ server {
     proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto $scheme;
 
+    # Strip upstream's own copies of these (Spring Security / helmet etc. set
+    # their own) so add_header below doesn't end up duplicating them.
+    proxy_hide_header X-Content-Type-Options;
+    proxy_hide_header X-Frame-Options;
+    proxy_hide_header Referrer-Policy;
+    proxy_hide_header Permissions-Policy;
+    proxy_hide_header Content-Security-Policy;
+
     # Baseline security headers for every response.
     add_header X-Content-Type-Options nosniff always;
     add_header X-Frame-Options DENY always;
