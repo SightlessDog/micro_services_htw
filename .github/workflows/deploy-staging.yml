@@ -32,7 +32,7 @@ jobs:
       - name: Build and push images
         run: |
           IMAGE_TAG="staging-${GITHUB_SHA::7}"
-          REPO="${{ env.REGISTRY }}/${{ secrets.GCP_PROJECT }}/ecommerce"
+          REPO="${{ env.REGISTRY }}/${{ secrets.GCP_PROJECT }}/crate"
 
           for SERVICE in frontend gateway user-service product-service order-service notification-service; do
             echo "Building $SERVICE..."
@@ -50,7 +50,7 @@ jobs:
           work-dir: infrastructure
           config-map: |
             {
-              "ecommerce-infra:imageTag": {
+              "crate-infra:imageTag": {
                 "value": "${{ env.IMAGE_TAG }}",
                 "secret": false
               }

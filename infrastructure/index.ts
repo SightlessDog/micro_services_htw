@@ -34,13 +34,13 @@ const kafkaJaasConfig = pulumi.interpolate`org.apache.kafka.common.security.scra
 
 // ── Artifact Registry ─────────────────────────────────────────────────────
 const registry = new gcp.artifactregistry.Repository("registry", {
-    repositoryId: "ecommerce",
+    repositoryId: "crate",
     format: "DOCKER",
     location: region,
     project,
 });
 
-const imageBase = pulumi.interpolate`${region}-docker.pkg.dev/${project}/ecommerce`;
+const imageBase = pulumi.interpolate`${region}-docker.pkg.dev/${project}/crate`;
 
 // ── Service Account ───────────────────────────────────────────────────────
 const sa = new gcp.serviceaccount.Account("cloud-run-sa", {
@@ -167,4 +167,4 @@ const frontendSvc = cloudRunService("frontend", [
 // ── Exports ───────────────────────────────────────────────────────────────
 export const frontendUrl = frontendSvc.uri;
 export const gatewayUrl = gatewaySvc.uri;
-export const registryUrl = pulumi.interpolate`${region}-docker.pkg.dev/${project}/ecommerce`;
+export const registryUrl = pulumi.interpolate`${region}-docker.pkg.dev/${project}/crate`;
