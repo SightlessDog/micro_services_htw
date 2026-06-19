@@ -18,7 +18,7 @@ config:
   crate-infra:minInstances: "0"
   crate-infra:zitadelIssuer: https://crate-test-ffikwi.eu1.zitadel.cloud
   crate-infra:zitadelClientId: "378095773759377500"
-  crate-infra:zitadelOrgId: "378094154841919580gc"
+  crate-infra:zitadelOrgId: "378094154841919580"
   crate-infra:smtpHost: smtp.resend.com
   crate-infra:smtpPort: "465"
   crate-infra:smtpFrom: noreply@crate.com
