@@ -21,7 +21,7 @@ config:
   crate-infra:zitadelOrgId: "378094154841919580"
   crate-infra:smtpHost: smtp.resend.com
   crate-infra:smtpPort: "465"
-  crate-infra:smtpFrom: noreply@crate.com
+  crate-infra:smtpFrom: onboarding@resend.dev
   crate-infra:neonUserDbUrl:
     secure: AAABAKY0BKWEjwXIQw+ZU9m/xMNAkZ0jGRV7KMwV3lyRCoQ+1JscZGcjC1MvxAoRg9I96TDIAIlSaLr3utExnzCfqis8umBzrkNm7yTBnGK7YY71fO2BP5hwe0kfGugavHbgyQPMmLhUomcmudmDexMGZ+lRdvn8XoimusGq1wC5eqJdgFY1hgrlhSCLZYwC5a/ipjvyWkfVg8pvuh5fwNOIH3wWObllP/ujAtzzzkatOgGIb0u1
   crate-infra:neonOrderDbUrl:
